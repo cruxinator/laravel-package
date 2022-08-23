@@ -1,0 +1,22 @@
+{
+    "name": "cruxinator/laravel-package",
+    "description": "Base package for Cruxinator helper packages for Laravel",
+    "type": "library",
+    "require": {
+        "laravel/framework": "^5.6|^6.0|^7.0|^8.0|^9.0",
+        "php": "^7.4|^8.0"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Cruxinator\\Package\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Alex Goodwin",
+            "email": "cyberia.resurrection@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev"
+}
