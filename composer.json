@@ -12,11 +12,35 @@
             "Cruxinator\\Package\\": "src/"
         }
     },
+    "require-dev": {
+        "nunomaduro/larastan": "^0.4.0",
+        "orchestra/testbench": "^3.6.7",
+        "phpstan/extension-installer": "*",
+        "phpstan/phpstan-deprecation-rules": "*",
+        "phpstan/phpstan-phpunit": "*",
+        "phpunit/phpunit": "^7.0",
+        "nunomaduro/collision": "^3.2"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Cruxinator\\Package\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "analyse": "vendor/bin/phpstan analyse",
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html=cover/"
+    },
     "authors": [
         {
             "name": "Alex Goodwin",
             "email": "cyberia.resurrection@gmail.com"
         }
     ],
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "config": {
+        "allow-plugins": {
+            "phpstan/extension-installer": true
+        }
+    }
 }

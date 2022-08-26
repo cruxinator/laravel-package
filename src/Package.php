@@ -16,10 +16,14 @@ class Package
      */
     public $configFileNames = [];
 
-    /**\
+    /**
      * @var bool
      */
     public $hasViews = false;
+    /**
+     * @var string|null
+     */
+    public $viewNamespace = null;
 
     /**
      * @var bool
@@ -30,6 +34,10 @@ class Package
      * @var bool
      */
     public $hasAssets = false;
+    /**
+     * @var bool
+     */
+    public bool $runsMigrations = false;
 
     /**
      * @var array
@@ -91,9 +99,11 @@ class Package
         return MyStr::after($this->name, 'laravel-');
     }
 
-    public function hasViews(): self
+    public function hasViews(string $namespace = null): self
     {
         $this->hasViews = true;
+
+        $this->viewNamespace = $namespace;
 
         return $this;
     }
@@ -148,6 +158,14 @@ class Package
         return $this;
     }
 
+    public function runsMigrations(bool $runsMigrations = true): self
+    {
+        $this->runsMigrations = $runsMigrations;
+
+        return $this;
+    }
+
+
     public function hasMigration(string $migrationFileName): self
     {
         $this->migrationFileNames[] = $migrationFileName;
@@ -200,6 +218,11 @@ class Package
         }
 
         return $this->basePath.DIRECTORY_SEPARATOR.ltrim($directory, DIRECTORY_SEPARATOR);
+    }
+
+    public function viewNamespace(): string
+    {
+        return $this->viewNamespace ?? $this->shortName();
     }
 
     public function setBasePath(string $path): self
