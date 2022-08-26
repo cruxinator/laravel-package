@@ -121,9 +121,9 @@ class TestTime
 
     public static function __callStatic($name, $arguments)
     {
-        $result = (new Carbon)->$name(...$arguments);
+        $result = (new Carbon())->$name(...$arguments);
 
-        if (!$result instanceof Carbon) {
+        if (! $result instanceof Carbon) {
             return $result;
         }
 
@@ -140,7 +140,7 @@ class TestTime
         }
 
         if (count($args) === 1) {
-            if (!$args[0] instanceof Carbon) {
+            if (! $args[0] instanceof Carbon) {
                 throw new InvalidArgumentException('You must pass a Carbon instance to `freeze`');
             }
 

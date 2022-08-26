@@ -165,7 +165,6 @@ class Package
         return $this;
     }
 
-
     public function hasMigration(string $migrationFileName): self
     {
         $this->migrationFileNames[] = $migrationFileName;

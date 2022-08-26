@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Cruxinator\Package\Tests\PackageServiceProviderTests;
 
 use Cruxinator\Package\Package;

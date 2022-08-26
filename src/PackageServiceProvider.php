@@ -3,11 +3,10 @@
 namespace Cruxinator\Package;
 
 use Carbon\Carbon;
+use Cruxinator\Package\Exceptions\InvalidPackage;
+use Cruxinator\Package\Strings\MyStr;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
-use Cruxinator\Package\Exceptions\InvalidPackage;
-use Cruxinator\Package\Package;
-use Cruxinator\Package\Strings\MyStr;
 use ReflectionClass;
 use ReflectionException;
 
@@ -182,6 +181,7 @@ abstract class PackageServiceProvider extends ServiceProvider
     public function packageBooted()
     {
     }
+
     public static function generateMigrationName(string $migrationFileName, Carbon $now): string
     {
         $migrationsPath = 'migrations/';
@@ -201,6 +201,7 @@ abstract class PackageServiceProvider extends ServiceProvider
 
         return database_path($migrationsPath . $now->format('Y_m_d_His') . '_' . MyStr::asStringable($migrationFileName)->snake()->finish('.php'));
     }
+
     /**
      * @return string
      * @throws ReflectionException
@@ -209,9 +210,10 @@ abstract class PackageServiceProvider extends ServiceProvider
     {
         $reflector = new ReflectionClass(get_class($this));
         $dir = dirname($reflector->getFileName());
-        if(MyStr::endsWith(strtolower($dir),'src')){
+        if (MyStr::endsWith(strtolower($dir), 'src')) {
             $dir = dirname($dir);
         }
+
         return $dir;
     }
 }

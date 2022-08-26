@@ -3,7 +3,6 @@
 namespace Cruxinator\Package\Tests\PackageServiceProviderTests;
 
 use Cruxinator\Package\Package;
-use Cruxinator\Package\Tests\TestCase;
 use Cruxinator\Package\Tests\TestTime;
 
 class MultiplePackageMigrationsTest extends PackageServiceProviderTestCase

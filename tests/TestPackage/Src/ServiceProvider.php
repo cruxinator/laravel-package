@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Cruxinator\Package\Tests\TestPackage\Src;
 
 use Closure;

@@ -5,7 +5,7 @@ namespace Cruxinator\Package\Strings;
 use Closure;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Traits\Macroable;
-use \JsonSerializable;
+use JsonSerializable;
 use Symfony\Component\VarDumper\VarDumper;
 
 class Stringable implements JsonSerializable
