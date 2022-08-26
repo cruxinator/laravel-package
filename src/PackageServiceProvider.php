@@ -3,11 +3,10 @@
 namespace Cruxinator\Package;
 
 use Carbon\Carbon;
+use Cruxinator\Package\Exceptions\InvalidPackage;
+use Cruxinator\Package\Strings\MyStr;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
-use Cruxinator\Package\Exceptions\InvalidPackage;
-use Cruxinator\Package\Package;
-use Cruxinator\Package\Strings\MyStr;
 use ReflectionClass;
 use ReflectionException;
 
@@ -67,19 +66,20 @@ abstract class PackageServiceProvider extends ServiceProvider
 
             $now = Carbon::now();
             foreach ($this->package->migrationFileNames as $migrationFileName) {
-                if (! static::migrationFileExists($migrationFileName)) {
-                    $this->publishes([
-                        $this->package->basePath("/database/migrations/{$migrationFileName}.php.stub") => with($migrationFileName, function ($migrationFileName) use ($now) {
-                            $migrationPath = 'migrations/';
+                $filePath = $this->package->basePath("/../database/migrations/{$migrationFileName}.php");
+                if (! file_exists($filePath)) {
+                    // Support for the .stub file extension
+                    $filePath .= '.stub';
+                }
 
-                            if (MyStr::contains($migrationFileName, '/')) {
-                                $migrationPath .= MyStr::asStringable($migrationFileName)->beforeLast('/')->finish('/');
-                                $migrationFileName = MyStr::asStringable($migrationFileName)->afterLast('/');
-                            }
+                $this->publishes([
+                    $filePath => $this->generateMigrationName(
+                        $migrationFileName,
+                        $now->addSecond()
+                    ), ], "{$this->package->shortName()}-migrations");
 
-                            return database_path($migrationPath.$now->addSecond()->format('Y_m_d_His').'_'.MyStr::asStringable($migrationFileName)->snake()->finish('.php'));
-                        }),
-                    ], "{$this->package->shortName()}-migrations");
+                if ($this->package->runsMigrations) {
+                    $this->loadMigrationsFrom($filePath);
                 }
             }
 
@@ -89,6 +89,9 @@ abstract class PackageServiceProvider extends ServiceProvider
                 ], "{$this->package->shortName()}-translations");
             }
 
+            if ($this->package->hasViews) {
+                $this->loadViewsFrom($this->package->basePath('/resources/views'), $this->package->viewNamespace());
+            }
             if ($this->package->hasAssets) {
                 $this->publishes([
                     $this->package->basePath('/resources/dist') => public_path("vendor/{$this->package->shortName()}"),
@@ -179,6 +182,26 @@ abstract class PackageServiceProvider extends ServiceProvider
     {
     }
 
+    public static function generateMigrationName(string $migrationFileName, Carbon $now): string
+    {
+        $migrationsPath = 'migrations/';
+
+        $len = strlen($migrationFileName) + 4;
+
+        if (MyStr::contains($migrationFileName, '/')) {
+            $migrationsPath .= MyStr::asStringable($migrationFileName)->beforeLast('/')->finish('/');
+            $migrationFileName = MyStr::asStringable($migrationFileName)->afterLast('/');
+        }
+
+        foreach (glob(database_path("{$migrationsPath}*.php")) as $filename) {
+            if ((substr($filename, -$len) === $migrationFileName . '.php')) {
+                return $filename;
+            }
+        }
+
+        return database_path($migrationsPath . $now->format('Y_m_d_His') . '_' . MyStr::asStringable($migrationFileName)->snake()->finish('.php'));
+    }
+
     /**
      * @return string
      * @throws ReflectionException
@@ -186,7 +209,11 @@ abstract class PackageServiceProvider extends ServiceProvider
     protected function getPackageBaseDir(): string
     {
         $reflector = new ReflectionClass(get_class($this));
+        $dir = dirname($reflector->getFileName());
+        if (MyStr::endsWith(strtolower($dir), 'src')) {
+            $dir = dirname($dir);
+        }
 
-        return dirname($reflector->getFileName());
+        return $dir;
     }
 }
