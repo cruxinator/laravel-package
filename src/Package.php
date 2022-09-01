@@ -37,7 +37,7 @@ class Package
     /**
      * @var bool
      */
-    public bool $runsMigrations = false;
+    public $runsMigrations = false;
 
     /**
      * @var array
